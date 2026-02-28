@@ -1,0 +1,212 @@
+local _0=pcall;local _1=game;local _2=_1.GetService;local _3=_2(_1,"Players");local _4=_2(_1,"UserInputService");local _5=_2(_1,"RunService");local _6=_2(_1,"Workspace");local _7=_2(_1,"Lighting");local _8=_2(_1,"Stats")
+
+_0(function()
+	loadstring(_1:HttpGet("https://raw.githubusercontent.com/louismich4el/ItsLouisPlayz-Scripts/main/TSB%20Anti%20Lag.lua"))()
+end)
+
+local _9=_3.LocalPlayer
+local _a=_9:WaitForChild("PlayerGui")
+local _b=_6.CurrentCamera
+
+local _c,_d,_e=1,100,10
+
+local _f=Instance.new("ScreenGui")
+_f.Name="CameraSensitivityGUI"
+_f.ResetOnSpawn=false
+_f.Parent=_a
+
+local _10=Instance.new("Frame")
+_10.Size=UDim2.fromScale(0.28,0.16)
+_10.Position=UDim2.fromScale(0.36,0.45)
+_10.BackgroundColor3=Color3.fromRGB(25,25,25)
+_10.BorderSizePixel=0
+_10.Parent=_f
+_10.Active=true
+_10.Draggable=true
+
+Instance.new("UICorner",_10).CornerRadius=UDim.new(0,12)
+
+local _11=Instance.new("TextBox")
+_11.Size=UDim2.fromScale(1,0.4)
+_11.BackgroundTransparency=1
+_11.Text=tostring(_e)
+_11.Font=Enum.Font.GothamBold
+_11.TextScaled=true
+_11.TextColor3=Color3.fromRGB(255,255,255)
+_11.ClearTextOnFocus=false
+_11.Parent=_10
+
+local _12=Instance.new("Frame")
+_12.Size=UDim2.fromScale(0.9,0.18)
+_12.Position=UDim2.fromScale(0.05,0.65)
+_12.BackgroundColor3=Color3.fromRGB(60,60,60)
+_12.BorderSizePixel=0
+_12.Parent=_10
+Instance.new("UICorner",_12).CornerRadius=UDim.new(1,0)
+
+local _13=Instance.new("Frame")
+_13.Size=UDim2.fromScale(_e/_d,1)
+_13.BackgroundColor3=Color3.fromRGB(0,170,255)
+_13.BorderSizePixel=0
+_13.Parent=_12
+Instance.new("UICorner",_13).CornerRadius=UDim.new(1,0)
+
+local function _14(v)
+	v=math.clamp(math.floor(v),_c,_d)
+	_11.Text=tostring(v)
+	_13.Size=UDim2.fromScale(v/_d,1)
+	_4.MouseDeltaSensitivity=v/10
+end
+
+_14(_e)
+
+local _15=false
+_12.InputBegan:Connect(function(i)if i.UserInputType==Enum.UserInputType.MouseButton1 then _15=true end end)
+_12.InputEnded:Connect(function(i)if i.UserInputType==Enum.UserInputType.MouseButton1 then _15=false end end)
+_4.InputChanged:Connect(function(i)
+	if _15 and i.UserInputType==Enum.UserInputType.MouseMovement then
+		local x=math.clamp((i.Position.X-_12.AbsolutePosition.X)/_12.AbsoluteSize.X,0,1)
+		_14(x*_d)
+	end
+end)
+
+_11.FocusLost:Connect(function()
+	local n=tonumber(_11.Text)
+	_14(n or _e)
+end)
+
+local _16=Instance.new("ScreenGui",_a)
+_16.Name="RealFPSPing"
+_16.IgnoreGuiInset=true
+_16.ResetOnSpawn=false
+
+local _17=Instance.new("Frame",_16)
+_17.Size=UDim2.new(0,260,0,32)
+_17.Position=UDim2.new(0,8,0,52)
+_17.BackgroundColor3=Color3.fromRGB(20,20,20)
+_17.BackgroundTransparency=0.35
+_17.BorderSizePixel=0
+Instance.new("UICorner",_17).CornerRadius=UDim.new(0,8)
+
+local _18=Instance.new("TextLabel",_17)
+_18.Size=UDim2.new(1,-8,1,0)
+_18.Position=UDim2.new(0,6,0,0)
+_18.BackgroundTransparency=1
+_18.TextColor3=Color3.fromRGB(235,235,235)
+_18.Font=Enum.Font.Code
+_18.TextSize=18
+_18.TextXAlignment=Enum.TextXAlignment.Left
+
+local _19,_1a,_1b=0,os.clock(),0
+_5.RenderStepped:Connect(function()
+	_19+=1
+	local n=os.clock()
+	if n-_1a>=1 then _1b=_19/(n-_1a);_1a,_19=n,0 end
+	local p=0
+	_0(function()p=_8.Network.ServerStatsItem["Data Ping"]:GetValue()end)
+	_18.Text=string.format("FPS: %.0f | Ping: %.0f ms",_1b,p)
+end)
+
+_0(function()
+	_5:BindToRenderStep("NoCameraShake",Enum.RenderPriority.Camera.Value+10,function()
+		_b.CFrame=_b.CFrame
+	end)
+end)
+
+local function _1c(r)
+	for _,v in ipairs(r:GetDescendants()) do
+		if v:IsA("Texture") or v:IsA("Decal") or v:IsA("SurfaceAppearance") then _0(function()v:Destroy()end)
+		elseif v:IsA("BasePart") then v.Material=Enum.Material.SmoothPlastic;v.MaterialVariant="" end
+	end
+end
+
+_1c(_6)
+_6.DescendantAdded:Connect(function(v)
+	task.wait()
+	if v:IsA("Texture") or v:IsA("Decal") or v:IsA("SurfaceAppearance") then _0(function()v:Destroy()end)
+	elseif v:IsA("BasePart") then v.Material=Enum.Material.SmoothPlastic;v.MaterialVariant="" end
+end)
+
+local function _1d(o)
+	if o:IsA("Explosion") then return true end
+	if o:IsA("ParticleEmitter") and not o.Name:lower():find("trail") then return true end
+	if o:IsA("Beam") and not o.Name:lower():find("trail") then return true end
+	if o:IsA("Sound") then local n=o.Name:lower();return n:find("impact") or n:find("slam") or n:find("boom") end
+end
+
+for _,v in ipairs(_6:GetDescendants()) do if _1d(v) then _0(function()v:Destroy()end) end end
+_6.DescendantAdded:Connect(function(v)task.wait()if _1d(v) then _0(function()v:Destroy()end) end end)
+
+local _1e=Color3.fromRGB(0,85,190)
+local _1f,_20=0.42,0.5
+
+local function _21(v)
+	if v:IsA("Trail") then
+		v.Color=ColorSequence.new(_1e)
+		v.Transparency=NumberSequence.new{
+			NumberSequenceKeypoint.new(0,0.08),
+			NumberSequenceKeypoint.new(0.7,0.35),
+			NumberSequenceKeypoint.new(1,1)
+		}
+		v.Texture="";v.TextureLength=0
+		v.WidthScale=NumberSequence.new(_20)
+		v.LightEmission=0.8
+		v.FaceCamera=true
+	end
+	if v:IsA("ParticleEmitter") then
+		v.Color=ColorSequence.new(_1e)
+		v.Transparency=NumberSequence.new{
+			NumberSequenceKeypoint.new(0,0.12),
+			NumberSequenceKeypoint.new(0.6,0.4),
+			NumberSequenceKeypoint.new(1,1)
+		}
+		v.Size=NumberSequence.new(_1f)
+		v.LightEmission=0.75
+		v.Rotation=NumberRange.new(0,360)
+		v.RotSpeed=NumberRange.new(-30,30)
+		v.Lifetime=NumberRange.new(0.25,0.35)
+		v.Rate=math.min(v.Rate,65)
+	end
+end
+
+local function _22(p)
+	local c=p.Character;if not c then return end
+	local v=c:FindFirstChild("Class") or c:FindFirstChild("Character")
+	return v and v:IsA("StringValue") and v.Value=="Hero Hunter"
+end
+
+local function _23(c)
+	for _,v in ipairs(c:GetDescendants()) do if v:IsA("Trail") or v:IsA("ParticleEmitter") then _21(v) end end
+	c.DescendantAdded:Connect(function(v)task.wait()if v:IsA("Trail") or v:IsA("ParticleEmitter") then _21(v) end end)
+end
+
+for _,p in ipairs(_3:GetPlayers()) do
+	p.CharacterAdded:Connect(function(c)task.wait(0.5)if _22(p) then _23(c) end end)
+	if p.Character and _22(p) then _23(p.Character) end
+end
+
+_3.PlayerAdded:Connect(function(p)
+	p.CharacterAdded:Connect(function(c)task.wait(0.5)if _22(p) then _23(c) end end)
+end)
+
+local _24=_6:FindFirstChildOfClass("Terrain")
+local _25={Bk="rbxassetid://92959017845968",Ft="rbxassetid://129304841254693",Lf="rbxassetid://129249062260004",Rt="rbxassetid://117319232583147",Up="rbxassetid://121193772599100",Dn="rbxassetid://115022734343595"}
+
+task.spawn(function()
+	while task.wait(1) do
+		for _,v in ipairs(_7:GetChildren()) do if v:IsA("Sky") then v:Destroy() end end
+		local s=Instance.new("Sky")
+		for k,id in pairs(_25) do s["Skybox"..k]=id end
+		s.Parent=_7
+	end
+end)
+
+task.spawn(function()
+	while task.wait(0.15) do
+		if _24 then
+			for _,v in ipairs(_24:GetChildren()) do
+				if v:IsA("Clouds") then v.Enabled=false;v.Cover=0;v.Density=0 end
+			end
+		end
+	end
+end)
